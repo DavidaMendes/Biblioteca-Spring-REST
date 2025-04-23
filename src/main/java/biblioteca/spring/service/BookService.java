@@ -2,6 +2,7 @@ package biblioteca.spring.service;
 
 import biblioteca.spring.component.DataExpirationBook;
 import biblioteca.spring.component.StatusBook;
+import biblioteca.spring.component.UserBookRental;
 import biblioteca.spring.exception.book.BookListNullException;
 import biblioteca.spring.exception.book.BookNoIDException;
 import biblioteca.spring.exception.book.BookNullException;
@@ -27,6 +28,9 @@ public class BookService {
 
     @Autowired
     private DataExpirationBook dataExpirationBook;
+
+    @Autowired
+    private UserBookRental userBookRental;
 
     private void validadeBook(Book book) {
         LocalDate date = LocalDate.now();
@@ -76,7 +80,7 @@ public class BookService {
         if(book!=null && !book.getStatusRent() && book.getDataExpiration() == null){
             book.setStatusRent(statusBook.tradeStatusBook(id));
             book.setDataExpiration(dataExpirationBook.defineDataExpiration(id));
-            bookRepository.save(book);
+            userBookRental.associateBookToUser(book);
         }
     }
 

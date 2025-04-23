@@ -2,6 +2,7 @@ package biblioteca.spring.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -10,7 +11,7 @@ public class Librarian {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(length = 50, nullable = false)
-    private String name;
+    private String username;
     @Column(length = 50, nullable = false)
     private String email;
     @Column(length = 100, nullable = false)
@@ -19,16 +20,21 @@ public class Librarian {
     private String cpf;
     @Column(length = 30, nullable = false)
     private String institution;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "table_librarian_roles", joinColumns = @JoinColumn(name = "librarian_id"))
+    @Column(name = "role_id")
+    private List<String> roles = new ArrayList<>();
 
     @Override
     public String toString() {
         return "Librarian{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", cpf='" + cpf + '\'' +
                 ", institution='" + institution + '\'' +
+                ", roles=" + roles +
                 '}';
     }
 
@@ -40,12 +46,12 @@ public class Librarian {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String name) {
+        this.username = name;
     }
 
     public String getEmail() {
@@ -78,5 +84,13 @@ public class Librarian {
 
     public void setInstitution(String institution) {
         this.institution = institution;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
     }
 }

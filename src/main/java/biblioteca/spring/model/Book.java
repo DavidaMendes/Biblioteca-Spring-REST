@@ -1,5 +1,6 @@
 package biblioteca.spring.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -22,9 +23,11 @@ public class Book {
     private String sinopse;
     private boolean statusRent;
     private LocalDate dataExpiration;
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User userRent;
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "user_id")
+    private User userRent;
+
 
     public Long getId() {
         return id;
@@ -94,13 +97,17 @@ public class Book {
         this.dataExpiration = dataExpiration;
     }
 
-//    public User getUserRent() {
-//        return userRent;
-//    }
-//
-//    public void setUserRent(User userRent) {
-//        this.userRent = userRent;
-//    }
+    public User getUserRent() {
+        return userRent;
+    }
+
+    public void setUserRent(User userRent) {
+        this.userRent = userRent;
+    }
+
+    public String getUserRentName() {
+        return userRent != null ? userRent.getUsername() : null;
+    }
 
     @Override
     public String toString() {
@@ -113,6 +120,7 @@ public class Book {
                 ", sinopse='" + sinopse + '\'' +
                 ", statusRent=" + statusRent +
                 ", dataExpiration=" + dataExpiration +
+                ", userRentName=" + (userRent != null ? userRent.getUsername() : "none") +
                 '}';
     }
 }

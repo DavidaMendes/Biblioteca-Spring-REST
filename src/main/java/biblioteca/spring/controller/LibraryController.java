@@ -1,5 +1,6 @@
 package biblioteca.spring.controller;
 
+import biblioteca.spring.component.UserBookRental;
 import biblioteca.spring.model.Book;
 import biblioteca.spring.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ public class LibraryController {
         bookService.createBook(book);
         return ResponseEntity.ok().body(book);
     }
+
 
 
 }
