@@ -1,7 +1,9 @@
 package biblioteca.spring.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import biblioteca.spring.model.Book;
@@ -13,7 +15,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(length = 50, nullable = false)
-    private String name;
+    private String username;
     @Column(length = 50, nullable = false)
     private String email;
     @Column(length = 100, nullable = false)
@@ -22,21 +24,13 @@ public class User {
     private String cpf;
     @Column(length = 11, nullable = false)
     private String phone;
-//    @OneToMany
-//    @JoinColumn(name = "user_id")
-//    private List<Book> listBooksRent;
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", cpf='" + cpf + '\'' +
-                ", phone='" + phone + '\'' +
-                '}';
-    }
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "table_user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role_id")
+    private List<String> roles = new ArrayList<>();
+    @OneToMany(mappedBy = "userRent")
+    @JsonManagedReference
+    private List<Book> listBooksRent;
 
     public Long getId() {
         return id;
@@ -46,12 +40,12 @@ public class User {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String name) {
+        this.username = name;
     }
 
     public String getEmail() {
@@ -86,11 +80,44 @@ public class User {
         this.phone = phone;
     }
 
-//    public List<Book> getListBooksRent() {
-//        return listBooksRent;
-//    }
-//
-//    public void setListBooksRent(List<Book> listBooksRent) {
-//        this.listBooksRent = listBooksRent;
-//    }
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
+
+    public List<Book> getListBooksRent() {
+        return listBooksRent;
+    }
+
+    public void setListBooksRent(List<Book> listBooksRent) {
+        this.listBooksRent = listBooksRent;
+    }
+
+    public List<String> getBookTitles() {
+        List<String> titles = new ArrayList<>();
+        if (listBooksRent != null) {
+            for (Book book : listBooksRent) {
+                titles.add(book.getTitle());
+            }
+        }
+        return titles;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", cpf='" + cpf + '\'' +
+                ", phone='" + phone + '\'' +
+                ", roles=" + roles +
+                ", bookCount=" + (listBooksRent != null ? listBooksRent.size() : 0) +
+                '}';
+    }
+
 }
