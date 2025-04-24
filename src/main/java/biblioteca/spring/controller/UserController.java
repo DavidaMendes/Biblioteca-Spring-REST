@@ -18,11 +18,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/login")
-    public String loginUser(){
-        return "login";
-    }
-
     @PostMapping("/cadastro")
     public ResponseEntity<User> registerUser(@RequestBody User user){
         userService.createUser(user);
@@ -34,4 +29,5 @@ public class UserController {
         List<Book> books = userService.getUserRentedBooks();
         return ResponseEntity.ok().body(books);
     }
+
 }

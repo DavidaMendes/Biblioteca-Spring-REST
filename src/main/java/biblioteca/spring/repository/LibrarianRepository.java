@@ -9,4 +9,6 @@ import org.springframework.data.repository.query.Param;
 public interface LibrarianRepository extends JpaRepository<Librarian, Long> {
     @Query("SELECT e FROM Librarian e JOIN FETCH e.roles WHERE e.username= (:username)")
     public Librarian findByUsername(@Param("username") String username);
+
+    boolean existsByUsername(String username);
 }

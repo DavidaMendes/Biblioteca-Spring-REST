@@ -1,5 +1,6 @@
 package biblioteca.spring.security;
 
+import biblioteca.spring.security.jwt.JWTFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,11 +9,13 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -33,9 +36,15 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .headers(headers -> headers
+                        .frameOptions(frameOptions -> frameOptions.sameOrigin())
+                )
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> {}) // Habilita CORS sem configurações específicas
+                .addFilterAfter(new JWTFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/cadastro").permitAll()
+                        .requestMatchers("/", "/login-user","/login-librarian", "/cadastro").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/biblioteca/livros").hasAnyRole("USERS", "MANAGERS")
                         .requestMatchers("/biblioteca/alugar-livro/**").hasRole("USERS")
                         .requestMatchers("/biblioteca/meus-livros").hasRole("USERS")
@@ -43,7 +52,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/biblioteca/**").hasAnyRole("USERS", "MANAGERS")
                         .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults());
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                //.httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
